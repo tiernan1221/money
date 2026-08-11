@@ -224,16 +224,6 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <section>
-  <h2>Suggestions</h2>
-  <p class="muted" style="margin-bottom:12px;">Financial moves worth making, in priority order. Tick one off and a replacement appears. Completed ones collapse into the history below. Ask Claude about any of them for the full reasoning.</p>
-  <div class="grid cards3" id="sugg-grid"></div>
-  <details id="sugg-done-wrap" style="margin-top:14px;">
-    <summary>Completed suggestions (<span id="sugg-done-count">0</span>)</summary>
-    <div id="sugg-done-list"></div>
-  </details>
-</section>
-
-<section>
   <h2>Cloud sync</h2>
   <div class="card">
     <p class="muted">Keeps this dashboard identical on your Mac and iPhone. Your figures are stored in a <b>private</b> repository that nobody can read without your token. Paste the same two values on both devices. After that it saves automatically and pulls the latest whenever you open it. Setup steps are in the PHONE-SETUP guide.</p>
@@ -249,6 +239,16 @@ button.btn2:hover{background:var(--teal-bg);}
       <span class="muted" id="sync-status"></span>
     </div>
   </div>
+</section>
+
+<section>
+  <h2>Suggestions</h2>
+  <p class="muted" style="margin-bottom:12px;">Financial moves worth making, in priority order. Tick one off and a replacement appears. Completed ones collapse into the history below. Ask Claude about any of them for the full reasoning.</p>
+  <div class="grid cards3" id="sugg-grid"></div>
+  <details id="sugg-done-wrap" style="margin-top:14px;">
+    <summary>Completed suggestions (<span id="sugg-done-count">0</span>)</summary>
+    <div id="sugg-done-list"></div>
+  </details>
 </section>
 
 <section>
@@ -270,7 +270,7 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v8 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v9 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
