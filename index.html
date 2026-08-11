@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Money">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0e1420">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src https://api.github.com; manifest-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAABzElEQVR42u3ZMQ2AMABE0SpgYmCsgyojOGLGD4YwwEAIJD14yVdweduVYazSacUEgkNwCA7BITgEh+AQHIJDcEhwCA7BITgEh+DQp3G0dVZQcAgOwSE4BIfgEBxwwAEHHHDA8SSOqTYFBYfgEByCQ3AIDsEBBxxwwAEHHHDAAYfgEByCQ3AIDsEhOOCAAw444IADDsEhOASH4BAcgiOiZd8uBgcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwNE5jnvBAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHA43hxvcMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxzv3/HpVz4ccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABh+AQHIJDcMABBxxwwAEHHIJDcAgOwSE4BIfggAMOOOCAAw44BIfgEByCQ3AIDsEBBxxwwAEHHHDAAYfgEByCQ3AIDsEhOOCAAw444IADDsGh3nDoD8EhOASH4BAcgkNwCA7BITgEhwSH4BAcgkNwCA6FdACgivEpw+LKzgAAAABJRU5ErkJggg==">
 <link rel="manifest" href='data:application/manifest+json,{"name":"Money dashboard","short_name":"Money","display":"standalone","background_color":"%230e1420","theme_color":"%230e1420","start_url":"."}'>
 <style>
@@ -169,10 +170,10 @@ button.btn2:hover{background:var(--teal-bg);}
     <div class="card metric"><label>Net position</label><div class="val" id="net-pos">£0</div></div>
   </div>
   <div class="grid cards3" style="margin-top:12px;align-items:start;">
-    <div class="card metric cat" id="cat-month"><label>Month ▾</label><div class="val" id="month-name">–</div><p class="muted">Tap for monthly history</p><div class="acct-drop" id="drop-month" style="display:none;"></div></div>
-    <div class="card metric cat" id="cat-fixed"><label>Fixed ▾</label><div class="val" id="pct-fixed">–</div><p class="muted">Aim 50–60%</p><div class="acct-drop" id="drop-fixed" style="display:none;"></div></div>
-    <div class="card metric cat" id="cat-future"><label>Future ▾</label><div class="val" id="pct-future">–</div><p class="muted">Aim 10–20%</p><div class="acct-drop" id="drop-future" style="display:none;"></div></div>
-    <div class="card metric cat" id="cat-fun"><label>Fun ▾</label><div class="val" id="pct-fun">–</div><p class="muted">Aim 20–30%</p><div class="acct-drop" id="drop-fun" style="display:none;"></div></div>
+    <div class="card metric cat" id="cat-month"><label>Month ▾</label><div class="val" id="month-name">-</div><p class="muted">Tap for monthly history</p><div class="acct-drop" id="drop-month" style="display:none;"></div></div>
+    <div class="card metric cat" id="cat-fixed"><label>Fixed ▾</label><div class="val" id="pct-fixed">-</div><p class="muted">Aim 50-60%</p><div class="acct-drop" id="drop-fixed" style="display:none;"></div></div>
+    <div class="card metric cat" id="cat-future"><label>Future ▾</label><div class="val" id="pct-future">-</div><p class="muted">Aim 10-20%</p><div class="acct-drop" id="drop-future" style="display:none;"></div></div>
+    <div class="card metric cat" id="cat-fun"><label>Fun ▾</label><div class="val" id="pct-fun">-</div><p class="muted">Aim 20-30%</p><div class="acct-drop" id="drop-fun" style="display:none;"></div></div>
   </div>
   <p class="muted" style="margin-top:8px;">Tap any figure to update it. It saves automatically.</p>
 </section>
@@ -269,7 +270,7 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v4 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v5 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
@@ -280,7 +281,7 @@ const fmt=n=>'£'+(Math.round(n*100)/100).toLocaleString('en-GB',{minimumFractio
 const todayStr=()=>new Date().toISOString().slice(0,10);
 
 const PHASES=[
- {id:1,name:'Phase 1 (14–31 Jul)',start:'2026-07-14',end:'2026-07-31',budget:208},
+ {id:1,name:'Phase 1 (14-31 Jul)',start:'2026-07-14',end:'2026-07-31',budget:208},
  {id:2,name:'Phase 2 (August)',start:'2026-08-01',end:'2026-08-31',budget:430},
  {id:3,name:'Phase 3 (September)',start:'2026-09-01',end:'2026-09-30',budget:400}
 ];
@@ -291,6 +292,7 @@ const MONTHS=(()=>{
   return out;
 })();
 const CAL_END='2027-12-31';
+const CAL_START='2026-07-01';
 
 const SEED_ACTS=[];
 
@@ -315,12 +317,20 @@ function currentMonthIdx(){const t=new Date();const i=MONTHS.findIndex(m=>m.y===
 function phaseFor(d){return PHASES.find(p=>d>=p.start&&d<=p.end);}
 function currentPhase(){return phaseFor(todayStr())||((todayStr()<PHASES[0].start)?PHASES[0]:PHASES[2]);}
 function uid(){return 'u'+Date.now()+Math.floor(Math.random()*999);}
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const idSafe=v=>String(v==null?'':v).replace(/[^a-zA-Z0-9_-]/g,'');
+function sanitiseIds(){
+  ['activities','spends','suggList'].forEach(k=>{
+    (state[k]||[]).forEach(o=>{if(!o.id||typeof o.id!=='string'||o.id!==idSafe(o.id))o.id=uid();});
+  });
+}
 function parseAmt(v){
   v=(v||'').trim();
   return {income:v.startsWith('+'),n:parseFloat(v.replace(/[+£,\s]/g,''))};
 }
 if(!state.settings)state.settings={payday:0};
 if(!state.settings.accNames)state.settings.accNames={revolut:'Account 1',aib:'Account 2'};
+sanitiseIds();
 let PAY_DEFAULT=state.settings.payday||0;
 const isPayday=a=>a.type==='event'&&/^\s*payday\s*$/i.test(a.name||'');
 function repeatHit(a,ds){
@@ -443,7 +453,7 @@ function renderCats(){
   CATS.forEach(c=>{
     const pct=grand>0?Math.round(data[c].total/grand*100):null;
     const el=document.getElementById('pct-'+c);
-    el.textContent=pct==null?'–':pct+'%';
+    el.textContent=pct==null?'-':pct+'%';
     const [lo,hi]=CAT_AIMS[c];
     el.style.color=pct==null?'var(--ink3)':(pct>=lo&&pct<=hi?'var(--teal)':'var(--amber)');
     const drop=document.getElementById('drop-'+c);
@@ -451,7 +461,7 @@ function renderCats(){
     if(!openCats[c])return;
     const entries=Object.entries(data[c].items).sort((a,b)=>b[1]-a[1]);
     drop.innerHTML=entries.length
-      ?entries.map(([n,v])=>'<div class="drop-row"><span>'+n+'</span><b>'+fmt(Math.round(v*100)/100)+'</b></div>').join('')+'<div class="drop-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span>Total this month</span><b>'+fmt(Math.round(data[c].total*100)/100)+'</b></div>'
+      ?entries.map(([n,v])=>'<div class="drop-row"><span>'+esc(n)+'</span><b>'+fmt(Math.round(v*100)/100)+'</b></div>').join('')+'<div class="drop-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span>Total this month</span><b>'+fmt(Math.round(data[c].total*100)/100)+'</b></div>'
       :'<p class="muted">Nothing in this category this month.</p>';
   });
 }
@@ -503,7 +513,7 @@ window.renameAcct=(acc,ev)=>{
 };
 function renderAccounts(){
   ['revolut','aib'].forEach(acc=>{
-    document.getElementById('lbl-'+acc).innerHTML=state.settings.accNames[acc]+' ▾ <span style="cursor:pointer;" onclick="renameAcct(\''+acc+'\',event)">✎</span>';
+    document.getElementById('lbl-'+acc).innerHTML=esc(state.settings.accNames[acc])+' ▾ <span style="cursor:pointer;" onclick="renameAcct(\''+acc+'\',event)">✎</span>';
     const el=document.getElementById('bal-'+acc);
     if(document.activeElement!==el)el.value=accountCash(acc);
     const drop=document.getElementById('drop-'+acc);
@@ -515,7 +525,7 @@ function renderAccounts(){
       const nxt=nextOccur(a);
       const amt=isPayday(a)?(a.budget||PAY_DEFAULT):(a.budget||0);
       if(!isPayday(a))total+=amt*({weekly:52/12,fortnightly:26/12,monthly:1,yearly:1/12}[a.repeat]||1);
-      rows+='<div class="drop-row"><span>'+a.name+' · '+a.repeat+(nxt?' · next '+nxt.slice(8)+'/'+nxt.slice(5,7):'')+'</span><b style="color:'+(isPayday(a)?'var(--teal)':'var(--red)')+'">'+(isPayday(a)?'+':'−')+fmt(amt)+'</b></div>';
+      rows+='<div class="drop-row"><span>'+esc(a.name)+' · '+esc(a.repeat)+(nxt?' · next '+nxt.slice(8)+'/'+nxt.slice(5,7):'')+'</span><b style="color:'+(isPayday(a)?'var(--teal)':'var(--red)')+'">'+(isPayday(a)?'+':'−')+fmt(amt)+'</b></div>';
     });
     drop.innerHTML=rows
       ?rows+'<div class="drop-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span>Keep in here monthly</span><b>'+fmt(Math.round(total))+'</b></div>'
@@ -524,7 +534,7 @@ function renderAccounts(){
   const sel=document.getElementById('act-account');
   if(sel&&sel.dataset.names!==JSON.stringify(state.settings.accNames)){
     const keep=sel.value;
-    sel.innerHTML='<option value="revolut">'+state.settings.accNames.revolut+'</option><option value="aib">'+state.settings.accNames.aib+'</option>';
+    sel.innerHTML='<option value="revolut">'+esc(state.settings.accNames.revolut)+'</option><option value="aib">'+esc(state.settings.accNames.aib)+'</option>';
     sel.value=keep||'revolut';
     sel.dataset.names=JSON.stringify(state.settings.accNames);
   }
@@ -534,11 +544,19 @@ function renderAccounts(){
 let PROJ={};
 function buildProjection(){
   PROJ={};
-  let bal=currentCash();
+  const startOfToday=currentCash();
+  let bal=startOfToday;
   for(let dt=new Date(todayStr()+'T12:00');dt<=new Date(CAL_END+'T12:00');dt.setDate(dt.getDate()+1)){
     const ds=dt.toISOString().slice(0,10);
     bal+=dayNet(ds);
     PROJ[ds]=bal;
+  }
+  let back=startOfToday;
+  for(let dt=new Date(todayStr()+'T12:00');dt>new Date(CAL_START+'T12:00');){
+    dt.setDate(dt.getDate()-1);
+    const ds=dt.toISOString().slice(0,10);
+    PROJ[ds]=back;
+    back-=dayNet(ds);
   }
 }
 
@@ -573,7 +591,7 @@ function renderCal(){
       const c=document.createElement('span');
       c.className='chip '+(isPayday(a)||a.type==='payday'?'c-payday':a.type==='bill'?'c-bill':(a.budget==null?'c-pending':'c-'+catOf(a)));
       c.textContent=(isPayday(a)?'+'+fmt(a.budget||PAY_DEFAULT)+' ':(a.type==='event'&&a.budget!=null&&occStart?fmt(a.budget)+' ':''))+a.name+(a.repeat?' ↻':'')+(a.end&&ds>a.date?' (cont.)':'');
-      c.title=a.name+(a.repeat?' (repeats '+a.repeat+(a.until?' until '+a.until.slice(8)+'/'+a.until.slice(5,7)+'/'+a.until.slice(0,4):'')+')':a.end?' ('+a.date.slice(8)+'/'+a.date.slice(5,7)+' – '+a.end.slice(8)+'/'+a.end.slice(5,7)+')':'');
+      c.title=a.name+(a.repeat?' (repeats '+a.repeat+(a.until?' until '+a.until.slice(8)+'/'+a.until.slice(5,7)+'/'+a.until.slice(0,4):'')+')':a.end?' ('+a.date.slice(8)+'/'+a.date.slice(5,7)+' to '+a.end.slice(8)+'/'+a.end.slice(5,7)+')':'');
       c.dataset.amt=isPayday(a)?'+'+fmt(Math.round(a.budget||PAY_DEFAULT)):(a.budget!=null&&occStart?fmt(Math.round(a.budget)):'·');
       cell.appendChild(c);
     });
@@ -612,14 +630,16 @@ function renderDayPanel(ds){
   acts.forEach(a=>{
     let tag=isPayday(a)?'Income +'+fmt(a.budget||PAY_DEFAULT):a.type==='payday'?'Payday':a.type==='bill'?'Bill':(a.budget==null?'Awaiting budget':'Budget '+fmt(a.budget));
     if(a.repeat)tag+=' · repeats '+a.repeat+(a.until?' until '+a.until.slice(8)+'/'+a.until.slice(5,7)+'/'+a.until.slice(0,4):'');
-    else if(a.end)tag+=' · '+a.date.slice(8)+'/'+a.date.slice(5,7)+' – '+a.end.slice(8)+'/'+a.end.slice(5,7);
-    html+=`<div class="row-item"><span>${a.name} <span class="muted">· ${tag}</span></span>
-      <span>${a.type==='event'&&!isPayday(a)?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleCat('${a.id}')">${catOf(a).toUpperCase().slice(0,3)}</button>`:''}${a.type==='event'?`<button class="x" title="Switch account" style="font-size:10px;font-weight:700;" onclick="toggleAcct('${a.id}')">${state.settings.accNames[actAccount(a)].slice(0,3).toUpperCase()}</button><button class="x" title="Set budget" onclick="setBudget('${a.id}')">✎</button>`:''}
-      <button class="x" title="Remove" onclick="delAct('${a.id}')">✕</button></span></div>`;
+    else if(a.end)tag+=' · '+a.date.slice(8)+'/'+a.date.slice(5,7)+' to '+a.end.slice(8)+'/'+a.end.slice(5,7);
+    const aid=idSafe(a.id);
+    html+=`<div class="row-item"><span>${esc(a.name)} <span class="muted">· ${esc(tag)}</span></span>
+      <span>${a.type==='event'&&!isPayday(a)?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleCat('${aid}')">${esc(catOf(a).toUpperCase().slice(0,3))}</button>`:''}${a.type==='event'?`<button class="x" title="Switch account" style="font-size:10px;font-weight:700;" onclick="toggleAcct('${aid}')">${esc(String(state.settings.accNames[actAccount(a)]).slice(0,3).toUpperCase())}</button><button class="x" title="Set budget" onclick="setBudget('${aid}')">✎</button>`:''}
+      <button class="x" title="Remove" onclick="delAct('${aid}')">✕</button></span></div>`;
   });
   spends.forEach(s=>{
-    html+=`<div class="row-item"><span>${s.what} <span class="muted">· ${s.amount<0?'received':'spent'}</span></span>
-      <span>${s.amount>0?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleSpendCat('${s.id}')">${spendCat(s).toUpperCase().slice(0,3)}</button>`:''}<b style="${s.amount<0?'color:var(--teal);':''}">${s.amount<0?'+'+fmt(-s.amount):fmt(s.amount)}</b> <button class="x" title="Remove" onclick="delSpend('${s.id}')">✕</button></span></div>`;
+    const sid=idSafe(s.id);
+    html+=`<div class="row-item"><span>${esc(s.what)} <span class="muted">· ${s.amount<0?'received':'spent'}</span></span>
+      <span>${s.amount>0?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleSpendCat('${sid}')">${esc(spendCat(s).toUpperCase().slice(0,3))}</button>`:''}<b style="${s.amount<0?'color:var(--teal);':''}">${s.amount<0?'+'+fmt(-s.amount):fmt(s.amount)}</b> <button class="x" title="Remove" onclick="delSpend('${sid}')">✕</button></span></div>`;
   });
   html+=`<form class="inline" onsubmit="quickSpend(event,'${ds}')">
     <input type="text" id="qs-what" placeholder="Log a spend for this day" required style="flex:1;min-width:140px;">
@@ -699,10 +719,10 @@ document.getElementById('copy-prompt').addEventListener('click',()=>{
 // ---------- suggestions ----------
 const SEED_SUGGS=[
  {id:'standing',tag:'Do now',cls:'b-red',title:'Automate your saving',body:"Set a standing order that moves money to savings the day after payday. Saving that happens automatically, before you can spend it, is the single highest-impact habit there is."},
- {id:'cass',tag:'Worth doing',cls:'b-amber',title:'Switch banks via CASS',body:"The Current Account Switch Service moves your salary and direct debits automatically within 7 days, and switching bonuses are often £100–£200 of free money. Check MoneySavingExpert for live offers."},
+ {id:'cass',tag:'Worth doing',cls:'b-amber',title:'Switch banks via CASS',body:"The Current Account Switch Service moves your salary and direct debits automatically within 7 days, and switching bonuses are often £100 to £200 of free money. Check MoneySavingExpert for live offers."},
  {id:'lisa',tag:'Worth doing',cls:'b-amber',title:'Open a Lifetime ISA with £1',body:"A LISA adds a 25% government bonus (up to £1,000/yr on £4,000) toward a first home, but it must be open 12 months before you can use it. Opening one with £1 starts that clock for free."},
  {id:'credit',tag:'Ongoing',cls:'b-teal',title:'Protect your credit file',body:"Landlords and mortgage lenders will check it. Register on the electoral roll, keep card spending under ~25% of your limit, and never miss a payment. Everyday spending on a card cleared in full builds history for free."},
- {id:'insurance',tag:'At renewal',cls:'b-teal',title:'Attack your insurance premium',body:"Diary the renewal date and compare quotes 3–4 weeks before it. Auto-renewal loyalty is consistently penalised; switching at renewal regularly saves 20% or more."},
+ {id:'insurance',tag:'At renewal',cls:'b-teal',title:'Attack your insurance premium',body:"Diary the renewal date and compare quotes 3 to 4 weeks before it. Auto-renewal loyalty is consistently penalised; switching at renewal regularly saves 20% or more."},
  {id:'sinking',tag:'Next',cls:'b-blue',title:'Start a car sinking fund',body:"Put a set amount aside monthly for MOT, tyres and servicing. Car surprises are the number one thing that pushes people back onto credit cards. Pre-funding them makes a bad month an inconvenience, not a debt."},
  {id:'overdraft',tag:'Ongoing',cls:'b-blue',title:'Retire the overdraft',body:"Arranged overdrafts often charge around 39% EAR when used, the most expensive borrowing most people have access to. Once your emergency fund covers a month, it does the overdraft's job for free."},
  {id:'rebudget',tag:'Before you move',cls:'b-red',title:'Re-budget before signing a lease',body:"Rent, utilities, groceries and broadband change your fixed costs dramatically. Run the new numbers before committing to a rent figure. The rule of thumb is rent below one-third of combined take-home."}
@@ -740,16 +760,16 @@ function renderSuggs(){
   const active=state.suggList.filter(s=>!s.done);
   const done=state.suggList.filter(s=>s.done);
   document.getElementById('sugg-grid').innerHTML=active.map(s=>
-   '<div class="card"><label class="sugg-done"><input type="checkbox" onchange="tickSugg(\''+s.id+'\',this.checked)"> done</label>'+
-   '<span class="badge '+s.cls+'">'+s.tag+'</span>'+
-   '<div class="phase-title">'+s.title+'</div>'+
-   '<p class="sugg-p">'+s.body+'</p>'+
+   '<div class="card"><label class="sugg-done"><input type="checkbox" onchange="tickSugg(\''+idSafe(s.id)+'\',this.checked)"> done</label>'+
+   '<span class="badge '+esc(s.cls)+'">'+esc(s.tag)+'</span>'+
+   '<div class="phase-title">'+esc(s.title)+'</div>'+
+   '<p class="sugg-p">'+esc(s.body)+'</p>'+
    (s.source==='chat'?'<p class="muted" style="margin-top:6px;font-size:11.5px;">researched by Claude</p>':'')+
    '</div>').join('')||'<p class="muted">Nothing active right now. Un-tick something below to bring it back.</p>';
   document.getElementById('sugg-done-count').textContent=done.length;
   document.getElementById('sugg-done-list').innerHTML=done.map(s=>
-   '<div class="row-item"><span><b>'+s.title+'</b> <span class="muted">· completed '+(s.doneDate||'')+'</span></span>'+
-   '<button class="x" title="Bring back" onclick="tickSugg(\''+s.id+'\',false)">↩</button></div>').join('')||'<p class="muted" style="padding:6px 0;">Nothing completed yet.</p>';
+   '<div class="row-item"><span><b>'+esc(s.title)+'</b> <span class="muted">· completed '+esc(s.doneDate||'')+'</span></span>'+
+   '<button class="x" title="Bring back" onclick="tickSugg(\''+idSafe(s.id)+'\',false)">↩</button></div>').join('')||'<p class="muted" style="padding:6px 0;">Nothing completed yet.</p>';
 }
 migrateSuggs();
 renderSuggs();
@@ -808,6 +828,7 @@ function queuePush(){
 function applyState(){
   if(!state.settings)state.settings={payday:0};
   if(!state.settings.accNames)state.settings.accNames={revolut:'Account 1',aib:'Account 2'};
+  sanitiseIds();
   PAY_DEFAULT=state.settings.payday||0;
   const pd=document.getElementById('bal-payday');if(pd)pd.value=PAY_DEFAULT;
   for(const[k,id]of Object.entries(balMap)){const el=document.getElementById(id);if(el)el.value=state.balances[k];}
