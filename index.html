@@ -270,7 +270,7 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v5 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v8 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
@@ -324,10 +324,7 @@ function sanitiseIds(){
     (state[k]||[]).forEach(o=>{if(!o.id||typeof o.id!=='string'||o.id!==idSafe(o.id))o.id=uid();});
   });
 }
-function parseAmt(v){
-  v=(v||'').trim();
-  return {income:v.startsWith('+'),n:parseFloat(v.replace(/[+£,\s]/g,''))};
-}
+const parseAmt=v=>parseFloat(String(v==null?'':v).replace(/[£,+\s]/g,''));
 if(!state.settings)state.settings={payday:0};
 if(!state.settings.accNames)state.settings.accNames={revolut:'Account 1',aib:'Account 2'};
 sanitiseIds();
@@ -641,23 +638,31 @@ function renderDayPanel(ds){
     html+=`<div class="row-item"><span>${esc(s.what)} <span class="muted">· ${s.amount<0?'received':'spent'}</span></span>
       <span>${s.amount>0?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleSpendCat('${sid}')">${esc(spendCat(s).toUpperCase().slice(0,3))}</button>`:''}<b style="${s.amount<0?'color:var(--teal);':''}">${s.amount<0?'+'+fmt(-s.amount):fmt(s.amount)}</b> <button class="x" title="Remove" onclick="delSpend('${sid}')">✕</button></span></div>`;
   });
-  html+=`<form class="inline" onsubmit="quickSpend(event,'${ds}')">
-    <input type="text" id="qs-what" placeholder="Log a spend for this day" required style="flex:1;min-width:140px;">
-    <input type="text" inputmode="decimal" id="qs-amt" placeholder="£ (+ = income)" style="width:110px;">
-    <button class="btn2" type="submit">Log</button></form>`;
+  html+=`<form class="inline" onsubmit="return false;">
+    <input type="text" id="qs-what" placeholder="What was it?" style="flex:1;min-width:140px;">
+    <input type="text" inputmode="decimal" id="qs-amt" placeholder="£" style="width:90px;">
+    <select id="qs-dir">
+      <option value="out">out</option>
+      <option value="in">in</option>
+    </select>
+    <button class="btn" type="button" onclick="quickSpend('${ds}')">Log</button></form>`;
   panel.innerHTML=html;
 }
-window.quickSpend=(e,ds)=>{e.preventDefault();
-  const what=document.getElementById('qs-what').value;
-  const amtEl=document.getElementById('qs-amt');
-  const {income,n}=parseAmt(amtEl.value);
-  if(/^\s*payday\s*$/i.test(what)){
+window.quickSpend=ds=>{
+  const whatEl=document.getElementById('qs-what'),amtEl=document.getElementById('qs-amt');
+  const what=whatEl.value.trim();
+  const n=parseAmt(amtEl.value);
+  const dir=document.getElementById('qs-dir').value==='in'?-1:1;
+  const nag=(el,msg)=>{el.setCustomValidity(msg);el.reportValidity();el.oninput=()=>el.setCustomValidity('');};
+  if(!what){nag(whatEl,'Give it a name, e.g. Coffee');return;}
+  if(/^payday$/i.test(what)){
     state.activities.push({id:uid(),date:ds,end:null,name:'PAYDAY',type:'event',budget:(n>0?n:0)});
   }else{
-    if(!(n>0)){amtEl.setCustomValidity('Enter an amount, e.g. 20, or +20 for income');amtEl.reportValidity();amtEl.oninput=()=>amtEl.setCustomValidity('');return;}
-    state.spends.push({id:uid(),date:ds,what,amount:income?-n:n});
+    if(!(n>0)){nag(amtEl,'Enter an amount, e.g. 20 or .50');return;}
+    state.spends.push({id:uid(),date:ds,what,amount:dir<0?-n:n});
   }
-  save();refresh();renderDayPanel(ds);};
+  save();refresh();renderDayPanel(ds);
+};
 window.delAct=id=>{state.activities=state.activities.filter(a=>a.id!==id);save();refresh();if(selectedDate)renderDayPanel(selectedDate);};
 window.toggleAcct=id=>{
   const a=state.activities.find(x=>x.id===id);if(!a)return;
