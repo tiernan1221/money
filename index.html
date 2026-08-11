@@ -160,8 +160,8 @@ button.btn2:hover{background:var(--teal-bg);}
 <section>
   <h2>What I have</h2>
   <div class="grid cards4">
-    <div class="card metric acct" id="acct-revolut"><label>Revolut balance ▾</label><input type="number" step="0.01" id="bal-revolut"><div class="acct-drop" id="drop-revolut" style="display:none;"></div></div>
-    <div class="card metric acct" id="acct-aib"><label>AIB balance ▾</label><input type="number" step="0.01" id="bal-aib"><div class="acct-drop" id="drop-aib" style="display:none;"></div></div>
+    <div class="card metric acct" id="acct-revolut"><label id="lbl-revolut"></label><input type="number" step="0.01" id="bal-revolut"><div class="acct-drop" id="drop-revolut" style="display:none;"></div></div>
+    <div class="card metric acct" id="acct-aib"><label id="lbl-aib"></label><input type="number" step="0.01" id="bal-aib"><div class="acct-drop" id="drop-aib" style="display:none;"></div></div>
     <div class="card metric"><label>Lifetime ISA</label><input type="number" step="0.01" id="bal-lisa"></div>
     <div class="card metric"><label>Emergency / moving vault</label><input type="number" step="0.01" id="bal-emergency"></div>
     <div class="card metric"><label>Credit card owed</label><input type="number" step="0.01" id="bal-card"></div>
@@ -174,7 +174,7 @@ button.btn2:hover{background:var(--teal-bg);}
     <div class="card metric cat" id="cat-future"><label>Future ▾</label><div class="val" id="pct-future">–</div><p class="muted">Aim 10–20%</p><div class="acct-drop" id="drop-future" style="display:none;"></div></div>
     <div class="card metric cat" id="cat-fun"><label>Fun ▾</label><div class="val" id="pct-fun">–</div><p class="muted">Aim 20–30%</p><div class="acct-drop" id="drop-fun" style="display:none;"></div></div>
   </div>
-  <p class="muted" style="margin-top:8px;">Tap any figure to update it — it saves automatically.</p>
+  <p class="muted" style="margin-top:8px;">Tap any figure to update it. It saves automatically.</p>
 </section>
 
 <section>
@@ -206,10 +206,7 @@ button.btn2:hover{background:var(--teal-bg);}
         <option value="future">future</option>
         <option value="fun">fun</option>
       </select>
-      <select id="act-account">
-        <option value="revolut">Revolut</option>
-        <option value="aib">AIB</option>
-      </select>
+      <select id="act-account"></select>
       <select id="act-mode">
         <option value="known">I know the cost</option>
         <option value="claude">Ask Claude to budget it</option>
@@ -220,24 +217,23 @@ button.btn2:hover{background:var(--teal-bg);}
     <div class="prompt-box" id="prompt-box"></div>
     <div style="margin-top:10px;display:none;" id="prompt-actions">
       <button class="btn2" id="copy-prompt">Copy prompt for Claude</button>
-      <span class="muted" id="copy-done" style="display:none;margin-left:8px;">Copied — paste it into your Claude chat</span>
+      <span class="muted" id="copy-done" style="display:none;margin-left:8px;">Copied. Paste it into your Claude chat</span>
     </div>
   </div>
 </section>
 
 <section>
   <h2>Suggestions</h2>
-  <p class="muted" style="margin-bottom:12px;">Financial moves worth making, in priority order. Tick one off and a replacement appears — completed ones collapse into the history below. Ask Claude about any of them for the full reasoning.</p>
+  <p class="muted" style="margin-bottom:12px;">Financial moves worth making, in priority order. Tick one off and a replacement appears. Completed ones collapse into the history below. Ask Claude about any of them for the full reasoning.</p>
   <div class="grid cards3" id="sugg-grid"></div>
   <details id="sugg-done-wrap" style="margin-top:14px;">
     <summary>Completed suggestions (<span id="sugg-done-count">0</span>)</summary>
     <div id="sugg-done-list"></div>
   </details>
   <div class="card" style="margin-top:14px;">
-    <p class="muted">Replacements come from a researched reserve. When it runs dry, the tools below appear — copy the prompt into your Claude chat, then paste the suggestion Claude gives you back in here.</p>
     <div style="margin-top:10px;display:none;" id="sugg-refill">
       <button class="btn2" id="sugg-copy">Copy prompt for Claude</button>
-      <span class="muted" id="sugg-copied" style="display:none;margin-left:8px;">Copied — paste it into your Claude chat</span>
+      <span class="muted" id="sugg-copied" style="display:none;margin-left:8px;">Copied. Paste it into your Claude chat</span>
       <form class="inline" id="sugg-add-form">
         <input type="text" id="sa-title" placeholder="Suggestion title" required style="flex:1;min-width:150px;">
         <input type="text" id="sa-body" placeholder="Details (paste Claude's answer)" required style="flex:2;min-width:220px;">
@@ -251,10 +247,10 @@ button.btn2:hover{background:var(--teal-bg);}
 <section>
   <h2>Cloud sync</h2>
   <div class="card">
-    <p class="muted">Keeps this dashboard identical on your Mac and iPhone. Your figures are stored in a <b>private</b> repository that nobody can read without your token. Paste the same two values on both devices — after that it saves automatically and pulls the latest whenever you open it. Setup steps are in <b>PHONE-SETUP.md</b> in your fileDash folder.</p>
+    <p class="muted">Keeps this dashboard identical on your Mac and iPhone. Your figures are stored in a <b>private</b> repository that nobody can read without your token. Paste the same two values on both devices. After that it saves automatically and pulls the latest whenever you open it. Setup steps are in the PHONE-SETUP guide.</p>
     <form class="inline" id="sync-form">
       <input type="password" id="sync-token" placeholder="GitHub token (github_pat_…)" style="flex:2;min-width:220px;">
-      <input type="text" id="sync-gist" placeholder="username/repo (e.g. tiernan/money-data)" style="flex:1;min-width:180px;">
+      <input type="text" id="sync-gist" placeholder="username/repo (e.g. yourname/money-data)" style="flex:1;min-width:180px;">
       <button class="btn" type="submit">Save</button>
     </form>
     <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center;">
@@ -269,7 +265,7 @@ button.btn2:hover{background:var(--teal-bg);}
 <section>
   <h2>Manual backup</h2>
   <div class="card">
-    <p class="muted">Export writes everything — balances, activities, spends, ticked suggestions — to a JSON file. Keep it in your fileDash folder (in iCloud Drive if you want it on your phone). Import restores from a backup file and replaces what's currently here.</p>
+    <p class="muted">Export writes everything (balances, activities, spends, ticked suggestions) to a JSON file. Keep it somewhere safe. Import restores from a backup file and replaces what's currently here.</p>
     <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center;">
       <button class="btn" id="export-btn">Export my data</button>
       <button class="btn2" id="import-btn">Import from backup</button>
@@ -284,7 +280,9 @@ button.btn2:hover{background:var(--teal-bg);}
   </div>
 </section>
 
-<p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">build v2 · 11 Aug 2026</p>
+<p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
+  build v3 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+</p>
 
 </div>
 
@@ -334,6 +332,7 @@ function parseAmt(v){
   return {income:v.startsWith('+'),n:parseFloat(v.replace(/[+£,\s]/g,''))};
 }
 if(!state.settings)state.settings={payday:0};
+if(!state.settings.accNames)state.settings.accNames={revolut:'Account 1',aib:'Account 2'};
 let PAY_DEFAULT=state.settings.payday||0;
 const isPayday=a=>a.type==='event'&&/^\s*payday\s*$/i.test(a.name||'');
 function repeatHit(a,ds){
@@ -509,8 +508,14 @@ function nextOccur(a){
   }
   return null;
 }
+window.renameAcct=(acc,ev)=>{
+  ev.stopPropagation();
+  const v=prompt('Name for this account:',state.settings.accNames[acc]);
+  if(v&&v.trim()){state.settings.accNames[acc]=v.trim();save();refresh();}
+};
 function renderAccounts(){
   ['revolut','aib'].forEach(acc=>{
+    document.getElementById('lbl-'+acc).innerHTML=state.settings.accNames[acc]+' ▾ <span style="cursor:pointer;" onclick="renameAcct(\''+acc+'\',event)">✎</span>';
     const el=document.getElementById('bal-'+acc);
     if(document.activeElement!==el)el.value=accountCash(acc);
     const drop=document.getElementById('drop-'+acc);
@@ -526,8 +531,15 @@ function renderAccounts(){
     });
     drop.innerHTML=rows
       ?rows+'<div class="drop-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span>Keep in here monthly</span><b>'+fmt(Math.round(total))+'</b></div>'
-      :'<p class="muted">No rolling payments assigned here yet — pick the account when adding an activity, or switch one via its day panel.</p>';
+      :'<p class="muted">No rolling payments assigned here yet. Pick the account when adding an activity, or switch one via its day panel.</p>';
   });
+  const sel=document.getElementById('act-account');
+  if(sel&&sel.dataset.names!==JSON.stringify(state.settings.accNames)){
+    const keep=sel.value;
+    sel.innerHTML='<option value="revolut">'+state.settings.accNames.revolut+'</option><option value="aib">'+state.settings.accNames.aib+'</option>';
+    sel.value=keep||'revolut';
+    sel.dataset.names=JSON.stringify(state.settings.accNames);
+  }
 }
 
 // ---------- projection ----------
@@ -614,7 +626,7 @@ function renderDayPanel(ds){
     if(a.repeat)tag+=' · repeats '+a.repeat+(a.until?' until '+a.until.slice(8)+'/'+a.until.slice(5,7)+'/'+a.until.slice(0,4):'');
     else if(a.end)tag+=' · '+a.date.slice(8)+'/'+a.date.slice(5,7)+' – '+a.end.slice(8)+'/'+a.end.slice(5,7);
     html+=`<div class="row-item"><span>${a.name} <span class="muted">· ${tag}</span></span>
-      <span>${a.type==='event'&&!isPayday(a)?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleCat('${a.id}')">${catOf(a).toUpperCase().slice(0,3)}</button>`:''}${a.type==='event'?`<button class="x" title="Switch account" style="font-size:10px;font-weight:700;" onclick="toggleAcct('${a.id}')">${actAccount(a)==='aib'?'AIB':'REV'}</button><button class="x" title="Set budget" onclick="setBudget('${a.id}')">✎</button>`:''}
+      <span>${a.type==='event'&&!isPayday(a)?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleCat('${a.id}')">${catOf(a).toUpperCase().slice(0,3)}</button>`:''}${a.type==='event'?`<button class="x" title="Switch account" style="font-size:10px;font-weight:700;" onclick="toggleAcct('${a.id}')">${state.settings.accNames[actAccount(a)].slice(0,3).toUpperCase()}</button><button class="x" title="Set budget" onclick="setBudget('${a.id}')">✎</button>`:''}
       <button class="x" title="Remove" onclick="delAct('${a.id}')">✕</button></span></div>`;
   });
   spends.forEach(s=>{
@@ -634,7 +646,7 @@ window.quickSpend=(e,ds)=>{e.preventDefault();
   if(/^\s*payday\s*$/i.test(what)){
     state.activities.push({id:uid(),date:ds,end:null,name:'PAYDAY',type:'event',budget:(n>0?n:0)});
   }else{
-    if(!(n>0)){amtEl.setCustomValidity('Enter an amount — e.g. 20, or +20 for income');amtEl.reportValidity();amtEl.oninput=()=>amtEl.setCustomValidity('');return;}
+    if(!(n>0)){amtEl.setCustomValidity('Enter an amount, e.g. 20, or +20 for income');amtEl.reportValidity();amtEl.oninput=()=>amtEl.setCustomValidity('');return;}
     state.spends.push({id:uid(),date:ds,what,amount:income?-n:n});
   }
   save();refresh();renderDayPanel(ds);};
@@ -700,22 +712,22 @@ document.getElementById('copy-prompt').addEventListener('click',()=>{
 const SEED_SUGGS=[
  {id:'standing',tag:'Do now',cls:'b-red',title:'Automate your saving',body:"Set a standing order that moves money to savings the day after payday. Saving that happens automatically, before you can spend it, is the single highest-impact habit there is."},
  {id:'cass',tag:'Worth doing',cls:'b-amber',title:'Switch banks via CASS',body:"The Current Account Switch Service moves your salary and direct debits automatically within 7 days, and switching bonuses are often £100–£200 of free money. Check MoneySavingExpert for live offers."},
- {id:'lisa',tag:'Worth doing',cls:'b-amber',title:'Open a Lifetime ISA with £1',body:"A LISA adds a 25% government bonus (up to £1,000/yr on £4,000) toward a first home — but it must be open 12 months before you can use it. Opening one with £1 starts that clock for free."},
+ {id:'lisa',tag:'Worth doing',cls:'b-amber',title:'Open a Lifetime ISA with £1',body:"A LISA adds a 25% government bonus (up to £1,000/yr on £4,000) toward a first home, but it must be open 12 months before you can use it. Opening one with £1 starts that clock for free."},
  {id:'credit',tag:'Ongoing',cls:'b-teal',title:'Protect your credit file',body:"Landlords and mortgage lenders will check it. Register on the electoral roll, keep card spending under ~25% of your limit, and never miss a payment. Everyday spending on a card cleared in full builds history for free."},
  {id:'insurance',tag:'At renewal',cls:'b-teal',title:'Attack your insurance premium',body:"Diary the renewal date and compare quotes 3–4 weeks before it. Auto-renewal loyalty is consistently penalised; switching at renewal regularly saves 20% or more."},
- {id:'sinking',tag:'Next',cls:'b-blue',title:'Start a car sinking fund',body:"Put a set amount aside monthly for MOT, tyres and servicing. Car surprises are the number one thing that pushes people back onto credit cards — pre-funding them makes a bad month an inconvenience, not a debt."},
- {id:'overdraft',tag:'Ongoing',cls:'b-blue',title:'Retire the overdraft',body:"Arranged overdrafts often charge around 39% EAR when used — the most expensive borrowing most people have access to. Once your emergency fund covers a month, it does the overdraft's job for free."},
- {id:'rebudget',tag:'Before you move',cls:'b-red',title:'Re-budget before signing a lease',body:"Rent, utilities, groceries and broadband change your fixed costs dramatically. Run the new numbers before committing to a rent figure — the rule of thumb is rent below one-third of combined take-home."}
+ {id:'sinking',tag:'Next',cls:'b-blue',title:'Start a car sinking fund',body:"Put a set amount aside monthly for MOT, tyres and servicing. Car surprises are the number one thing that pushes people back onto credit cards. Pre-funding them makes a bad month an inconvenience, not a debt."},
+ {id:'overdraft',tag:'Ongoing',cls:'b-blue',title:'Retire the overdraft',body:"Arranged overdrafts often charge around 39% EAR when used, the most expensive borrowing most people have access to. Once your emergency fund covers a month, it does the overdraft's job for free."},
+ {id:'rebudget',tag:'Before you move',cls:'b-red',title:'Re-budget before signing a lease',body:"Rent, utilities, groceries and broadband change your fixed costs dramatically. Run the new numbers before committing to a rent figure. The rule of thumb is rent below one-third of combined take-home."}
 ];
 const RESERVE=[
- {id:'r-autopay',tag:'Do now',cls:'b-red',title:'Set card autopay to full balance',body:"Switch the credit card direct debit from minimum payment to full statement balance. It makes a missed payment impossible and guarantees you never pay a penny of interest — your credit history builds itself from there."},
- {id:'r-match',tag:'Check now',cls:'b-amber',title:'Max the pension match',body:"Check what percentage your employer matches and contribute at least that. Matched contributions are an instant 100% return — no savings account or investment will ever beat it. Anything below the match is salary left on the table."},
+ {id:'r-autopay',tag:'Do now',cls:'b-red',title:'Set card autopay to full balance',body:"Switch the credit card direct debit from minimum payment to full statement balance. It makes a missed payment impossible and guarantees you never pay a penny of interest. Your credit history builds itself from there."},
+ {id:'r-match',tag:'Check now',cls:'b-amber',title:'Max the pension match',body:"Check what percentage your employer matches and contribute at least that. Matched contributions are an instant 100% return. No savings account or investment will ever beat it. Anything below the match is salary left on the table."},
  {id:'r-slrepay',tag:'Know this',cls:'b-blue',title:"Don't overpay the student loan",body:"Plan 1 loans behave like a tax, not a debt: repayments scale with income and the balance may eventually be written off. Spare money almost always does more in your vaults or a LISA than in voluntary overpayments."},
- {id:'r-24h',tag:'Habit',cls:'b-teal',title:'Use the 24-hour rule',body:"For any unplanned purchase over £50, wait a day before buying. Most impulse urges don't survive the night — and the ones that do are usually the purchases actually worth making."},
- {id:'r-creditcheck',tag:'Before renting',cls:'b-amber',title:'Check all three credit agencies',body:"Landlords may run Experian, Equifax or TransUnion. Free tools (MoneySavingExpert Credit Club, ClearScore, Credit Karma) cover all three between them — find and dispute any errors before you apply for a tenancy."},
- {id:'r-joint',tag:'When you move',cls:'b-blue',title:'Open a joint bills account',body:"When you move in together, open a shared account just for rent and utilities, each paying in an agreed amount on payday. Bill money becomes untouchable and splitting is automatic — no awkward month-end maths."},
- {id:'r-subaudit',tag:'Quarterly',cls:'b-teal',title:'Audit subscriptions quarterly',body:"Set a calendar reminder every three months to review Claude, Apple, gym and anything that's crept in. Cancel whatever you haven't used in a month — subscriptions are priced on being forgotten."},
- {id:'r-fscs',tag:'As savings grow',cls:'b-blue',title:'Mind where big savings sit',body:"Revolut holds savings via partner banks — check how yours are protected. Once you're holding serious money, keep it FSCS-protected (£85,000 per bank) and re-shop the interest rate once a year."}
+ {id:'r-24h',tag:'Habit',cls:'b-teal',title:'Use the 24-hour rule',body:"For any unplanned purchase over £50, wait a day before buying. Most impulse urges don't survive the night, and the ones that do are usually the purchases actually worth making."},
+ {id:'r-creditcheck',tag:'Before renting',cls:'b-amber',title:'Check all three credit agencies',body:"Landlords may run Experian, Equifax or TransUnion. Free tools (MoneySavingExpert Credit Club, ClearScore, Credit Karma) cover all three between them. Find and dispute any errors before you apply for a tenancy."},
+ {id:'r-joint',tag:'When you move',cls:'b-blue',title:'Open a joint bills account',body:"When you move in together, open a shared account just for rent and utilities, each paying in an agreed amount on payday. Bill money becomes untouchable and splitting is automatic, with no awkward month-end maths."},
+ {id:'r-subaudit',tag:'Quarterly',cls:'b-teal',title:'Audit subscriptions quarterly',body:"Set a calendar reminder every three months to review Claude, Apple, gym and anything that's crept in. Cancel whatever you haven't used in a month. Subscriptions are priced on being forgotten."},
+ {id:'r-fscs',tag:'As savings grow',cls:'b-blue',title:'Mind where big savings sit',body:"Revolut holds savings via partner banks, so check how yours are protected. Once you're holding serious money, keep it FSCS-protected (£85,000 per bank) and re-shop the interest rate once a year."}
 ];
 function migrateSuggs(){
   if(state.suggList)return;
@@ -734,7 +746,7 @@ function reserveEmpty(){return !RESERVE.some(r=>!state.suggList.some(s=>s.id===r
 window.tickSugg=(id,checked)=>{
   const s=state.suggList.find(x=>x.id===id);if(!s)return;
   s.done=checked;s.doneDate=checked?todayStr():null;
-  if(checked&&!addFromReserve())document.getElementById('sugg-status').textContent='Reserve is empty — use “Copy prompt for Claude” below to research the next one.';
+  if(checked&&!addFromReserve())document.getElementById('sugg-status').textContent='Reserve is empty. Use the "Copy prompt for Claude" button below to research the next one.';
   save();renderSuggs();
 };
 function renderSuggs(){
@@ -746,7 +758,7 @@ function renderSuggs(){
    '<div class="phase-title">'+s.title+'</div>'+
    '<p class="sugg-p">'+s.body+'</p>'+
    (s.source==='chat'?'<p class="muted" style="margin-top:6px;font-size:11.5px;">researched by Claude</p>':'')+
-   '</div>').join('')||'<p class="muted">Nothing active right now — un-tick something below, or ask Claude for a fresh one and add it here.</p>';
+   '</div>').join('')||'<p class="muted">Nothing active right now. Un-tick something below, or ask Claude for a fresh one and add it here.</p>';
   document.getElementById('sugg-done-count').textContent=done.length;
   document.getElementById('sugg-done-list').innerHTML=done.map(s=>
    '<div class="row-item"><span><b>'+s.title+'</b> <span class="muted">· completed '+(s.doneDate||'')+'</span></span>'+
@@ -812,7 +824,7 @@ async function pushCloud(){
     syncSay('Synced '+stamp());
   }catch(e){
     fileSha=null;
-    syncSay('Sync failed — '+e.message);
+    syncSay('Sync failed: '+e.message);
   }
 }
 function queuePush(){
@@ -822,6 +834,7 @@ function queuePush(){
 }
 function applyState(){
   if(!state.settings)state.settings={payday:0};
+  if(!state.settings.accNames)state.settings.accNames={revolut:'Account 1',aib:'Account 2'};
   PAY_DEFAULT=state.settings.payday||0;
   const pd=document.getElementById('bal-payday');if(pd)pd.value=PAY_DEFAULT;
   for(const[k,id]of Object.entries(balMap)){const el=document.getElementById(id);if(el)el.value=state.balances[k];}
@@ -832,7 +845,7 @@ async function pullCloud(auto){
   pulling=true;syncSay('Checking…');
   try{
     const f=await repoCall('GET');
-    if(!f||!f.content){fileSha=undefined;syncSay(auto?'Nothing stored yet — press Push to start it off.':'Nothing stored in the repository yet.');pulling=false;return;}
+    if(!f||!f.content){fileSha=undefined;syncSay(auto?'Nothing stored yet. Press Push to start it off.':'Nothing stored in the repository yet.');pulling=false;return;}
     fileSha=f.sha;
     const remote=JSON.parse(b64dec(f.content));
     const rT=remote.updatedAt||0,lT=state.updatedAt||0;
@@ -841,7 +854,7 @@ async function pullCloud(auto){
     localStorage.setItem(KEY,JSON.stringify(state));
     applyState();
     syncSay('Pulled latest · '+stamp());
-  }catch(e){syncSay('Could not pull — '+e.message);}
+  }catch(e){syncSay('Could not pull: '+e.message);}
   pulling=false;
 }
 document.getElementById('sync-form').addEventListener('submit',e=>{
@@ -853,7 +866,7 @@ document.getElementById('sync-form').addEventListener('submit',e=>{
   document.getElementById('sync-token').value='';
   document.getElementById('sync-gist').value=repo;
   fileSha=null;
-  syncSay('Saved on this device — checking…');
+  syncSay('Saved on this device. Checking…');
   pullCloud(true);
 });
 document.getElementById('sync-pull').addEventListener('click',()=>pullCloud(false));
@@ -871,7 +884,7 @@ document.getElementById('export-btn').addEventListener('click',()=>{
   a.href=URL.createObjectURL(blob);
   a.download='finDash-backup-'+todayStr()+'.json';
   a.click();URL.revokeObjectURL(a.href);
-  document.getElementById('backup-status').textContent='Exported — check your Downloads folder, then move it into fileDash.';
+  document.getElementById('backup-status').textContent='Exported. Check your Downloads folder, then move it into your dashboard folder.';
 });
 document.getElementById('import-btn').addEventListener('click',()=>document.getElementById('import-file').click());
 let pendingImport=null;
@@ -881,7 +894,7 @@ document.getElementById('import-file').addEventListener('change',e=>{
   r.onload=()=>{
     try{
       const data=JSON.parse(r.result);
-      if(!data.balances||!Array.isArray(data.activities)||!Array.isArray(data.spends))throw new Error('missing expected data — is this a dashboard export?');
+      if(!data.balances||!Array.isArray(data.activities)||!Array.isArray(data.spends))throw new Error('missing expected data. Is this a dashboard export?');
       pendingImport=data;
       document.getElementById('import-name').textContent='Replace everything with "'+f.name+'"?';
       document.getElementById('import-confirm').style.display='flex';
@@ -915,6 +928,14 @@ initBalances();
 initCats();
 renderTabs();
 refresh();
+
+document.getElementById('update-btn').addEventListener('click',async e=>{
+  e.target.textContent='Updating…';
+  try{
+    if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}
+  }catch(err){}
+  location.replace(location.pathname+'?v='+Date.now());
+});
 
 window.__syncReady=true;
 if(syncOn()){
