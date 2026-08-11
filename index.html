@@ -112,14 +112,44 @@ button.btn2:hover{background:var(--teal-bg);}
 .status-line{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);flex-wrap:wrap;gap:6px;}
 .status-line b{font-variant-numeric:tabular-nums;}
 .prompt-box{background:var(--bg);border:1px dashed var(--border2);border-radius:10px;padding:14px;font-size:13px;margin-top:12px;white-space:pre-wrap;display:none;}
-.footer-note{font-size:13px;color:var(--ink3);border-top:1px solid var(--border);padding-top:18px;margin-top:8px;}
 .sugg-p{font-size:13.5px;color:var(--ink2);margin-top:8px;}
 .sugg-done{float:right;font-size:12px;color:var(--ink3);cursor:pointer;user-select:none;}
 .card.done{opacity:.5;}
 .b-purple{background:var(--purple-bg);color:var(--purple);}
 #sugg-done-wrap summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink2);padding:8px 0;}
 #sugg-done-wrap summary:hover{color:var(--teal);}
-@media(max-width:640px){ .day{min-height:64px;} .chip{display:none;} .day.has-items::after{content:"•";position:absolute;top:4px;right:7px;color:var(--purple);} h1{font-size:28px;} }
+@media(max-width:760px){
+  body{padding:calc(18px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));}
+  h1{font-size:26px;}
+  h2{font-size:11.5px;letter-spacing:.11em;margin-bottom:10px;}
+  section{margin-bottom:28px;}
+  .grid{gap:10px;}
+  .cards4,.cards3{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+  .card{padding:14px 15px;border-radius:12px;}
+  .metric .val,.metric input{font-size:19px;}
+  .tabs{gap:6px;margin-bottom:12px;}
+  .tab{padding:7px 13px;font-size:13px;}
+  .cal{gap:4px;}
+  .cal .dow{font-size:9px;letter-spacing:.02em;padding-bottom:2px;}
+  .day{min-height:62px;padding:4px 3px;border-radius:8px;}
+  .day .num{font-size:10.5px;}
+  .chip{font-size:0;padding:2px 1px;margin-top:2px;border-radius:4px;text-align:center;line-height:1.25;}
+  .chip::before{content:attr(data-amt);font-size:9.5px;font-weight:600;}
+  .day-foot{padding-top:3px;flex-direction:column;align-items:stretch;gap:0;}
+  .proj-tag{font-size:10.5px;}
+  .spent-tag,.gain-tag{font-size:9.5px;}
+  .panel{padding:15px;}
+  form.inline{gap:6px;}
+  form.inline > input,form.inline > select,form.inline > button{flex:1 1 100%;min-width:0;width:100%;}
+  .row-item{font-size:13px;}
+  .drop-row{font-size:11.5px;}
+}
+@media(max-width:400px){
+  .cal{gap:3px;}
+  .day{min-height:56px;padding:3px 2px;}
+  .chip::before{font-size:8.5px;}
+  .cards4,.cards3{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
+}
 </style>
 </head>
 <body>
@@ -196,25 +226,6 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <section>
-  <h2>Log spending</h2>
-  <div class="card">
-    <p class="muted">At the end of each week (or day), log what you actually spent. The tracker above updates instantly.</p>
-    <form class="inline" id="spend-form">
-      <input type="date" id="spend-date" required min="2026-07-01" max="2027-12-31">
-      <input type="text" id="spend-what" placeholder="What was it?" required style="flex:1;min-width:160px;">
-      <input type="text" inputmode="decimal" id="spend-amt" placeholder="£ (+ = income)" style="width:120px;">
-      <select id="spend-cat">
-        <option value="fun">fun</option>
-        <option value="fixed">fixed</option>
-        <option value="future">future</option>
-      </select>
-      <button class="btn" type="submit">Log it</button>
-    </form>
-    <div id="spend-list" style="margin-top:14px;"></div>
-  </div>
-</section>
-
-<section>
   <h2>Suggestions</h2>
   <p class="muted" style="margin-bottom:12px;">Financial moves worth making, in priority order. Tick one off and a replacement appears — completed ones collapse into the history below. Ask Claude about any of them for the full reasoning.</p>
   <div class="grid cards3" id="sugg-grid"></div>
@@ -234,19 +245,6 @@ button.btn2:hover{background:var(--teal-bg);}
       </form>
     </div>
     <p class="muted" id="sugg-status" style="margin-top:8px;"></p>
-  </div>
-</section>
-
-<section>
-  <h2>iCloud calendar (CF)</h2>
-  <div class="card">
-    <p class="muted">Send: downloads an .ics of your dashboard activities — open it, choose your CF calendar, and iCloud spreads it to your iPhone and anyone sharing it. Receive: in Calendar on your Mac, select CF then File → Export, and import that .ics here — new events arrive amber, awaiting a budget.</p>
-    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center;">
-      <button class="btn" id="ics-export">Send activities to iCloud (.ics)</button>
-      <button class="btn2" id="ics-import-btn">Import CF export (.ics)</button>
-      <input type="file" id="ics-file" accept=".ics,text/calendar" style="display:none;">
-      <span class="muted" id="ics-status"></span>
-    </div>
   </div>
 </section>
 
@@ -285,10 +283,6 @@ button.btn2:hover{background:var(--teal-bg);}
     </div>
   </div>
 </section>
-
-<p class="footer-note">
-How this works: activities marked "Ask Claude" appear amber on the calendar until you set a budget. The copy button builds a prompt containing your live numbers — paste it into your Claude chat, get a figure back, then click the activity on the calendar and set its budget. Your data is stored in this browser and, if cloud sync is switched on, in your private repository — never in this file.
-</p>
 
 </div>
 
@@ -578,6 +572,7 @@ function renderCal(){
       c.className='chip '+(isPayday(a)||a.type==='payday'?'c-payday':a.type==='bill'?'c-bill':(a.budget==null?'c-pending':'c-'+catOf(a)));
       c.textContent=(isPayday(a)?'+'+fmt(a.budget||PAY_DEFAULT)+' ':(a.type==='event'&&a.budget!=null&&occStart?fmt(a.budget)+' ':''))+a.name+(a.repeat?' ↻':'')+(a.end&&ds>a.date?' (cont.)':'');
       c.title=a.name+(a.repeat?' (repeats '+a.repeat+(a.until?' until '+a.until.slice(8)+'/'+a.until.slice(5,7)+'/'+a.until.slice(0,4):'')+')':a.end?' ('+a.date.slice(8)+'/'+a.date.slice(5,7)+' – '+a.end.slice(8)+'/'+a.end.slice(5,7)+')':'');
+      c.dataset.amt=isPayday(a)?'+'+fmt(Math.round(a.budget||PAY_DEFAULT)):(a.budget!=null&&occStart?fmt(Math.round(a.budget)):'·');
       cell.appendChild(c);
     });
     daySpends.forEach(s=>{
@@ -585,6 +580,7 @@ function renderCal(){
       c.className='chip '+(s.amount<0?'c-payday':'c-'+spendCat(s));
       c.textContent=(s.amount<0?'+'+fmt(-s.amount):fmt(s.amount))+' '+s.what;
       c.title=s.what+(s.amount<0?' (received)':' (logged spend · '+spendCat(s)+')');
+      c.dataset.amt=(s.amount<0?'+'+fmt(Math.round(-s.amount)):fmt(Math.round(s.amount)));
       cell.appendChild(c);
     });
     const net=Math.round(dayNet(ds));
@@ -663,29 +659,6 @@ window.setBudget=id=>{
   if(v===null)return;const n=parseFloat(v);
   if(!isNaN(n)&&n>=0){a.budget=n;save();refresh();if(selectedDate)renderDayPanel(selectedDate);}
 };
-
-// ---------- spend log ----------
-function renderSpendList(){
-  const el=document.getElementById('spend-list');
-  if(!state.spends.length){el.innerHTML='<p class="muted">No spending logged yet.</p>';return;}
-  const sorted=[...state.spends].sort((a,b)=>b.date.localeCompare(a.date));
-  el.innerHTML=sorted.slice(0,25).map(s=>
-    `<div class="row-item"><span><span class="muted">${s.date.slice(8)}/${s.date.slice(5,7)}</span> ${s.what}</span>
-     <span><b style="${s.amount<0?'color:var(--teal);':''}">${s.amount<0?'+'+fmt(-s.amount):fmt(s.amount)}</b> <button class="x" onclick="delSpend('${s.id}')">✕</button></span></div>`).join('');
-}
-document.getElementById('spend-form').addEventListener('submit',e=>{
-  e.preventDefault();
-  const date=document.getElementById('spend-date').value,what=document.getElementById('spend-what').value;
-  const amtEl=document.getElementById('spend-amt');
-  const {income,n}=parseAmt(amtEl.value);
-  if(/^\s*payday\s*$/i.test(what)){
-    state.activities.push({id:uid(),date,end:null,name:'PAYDAY',type:'event',budget:(n>0?n:0)});
-  }else{
-    if(!(n>0)){amtEl.setCustomValidity('Enter an amount — e.g. 20, or +20 for income');amtEl.reportValidity();amtEl.oninput=()=>amtEl.setCustomValidity('');return;}
-    state.spends.push({id:uid(),date,what,amount:income?-n:n,category:document.getElementById('spend-cat').value});
-  }
-  save();e.target.reset();document.getElementById('spend-date').value=todayStr();refresh();
-});
 
 // ---------- add activity ----------
 const actMode=document.getElementById('act-mode'),actAmt=document.getElementById('act-amt');
@@ -793,58 +766,6 @@ document.getElementById('sugg-add-form').addEventListener('submit',e=>{
 });
 migrateSuggs();
 renderSuggs();
-
-// ---------- icloud ics ----------
-const icsEsc=t=>t.replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,');
-const icsUnesc=t=>t.replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');
-const shiftDay=(d,n)=>{const t=new Date(d+'T12:00');t.setDate(t.getDate()+n);return t.toISOString().slice(0,10);};
-document.getElementById('ics-export').addEventListener('click',()=>{
-  const ev=state.activities.filter(a=>a.type==='event');
-  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//finDash//EN','CALSCALE:GREGORIAN'];
-  ev.forEach(a=>{
-    lines.push('BEGIN:VEVENT','UID:'+a.id+'@findash','DTSTAMP:'+todayStr().replace(/-/g,'')+'T000000Z',
-      'DTSTART;VALUE=DATE:'+a.date.replace(/-/g,''),
-      'DTEND;VALUE=DATE:'+shiftDay(a.end||a.date,1).replace(/-/g,''),
-      'SUMMARY:'+icsEsc(a.name+(a.budget!=null?' (£'+a.budget+')':'')));
-    if(a.repeat)lines.push('RRULE:'+({weekly:'FREQ=WEEKLY',fortnightly:'FREQ=WEEKLY;INTERVAL=2',monthly:'FREQ=MONTHLY',yearly:'FREQ=YEARLY'}[a.repeat])+';UNTIL='+(a.until?a.until.replace(/-/g,''):'20271231'));
-    lines.push(
-      'DESCRIPTION:'+icsEsc('From money dashboard'+(a.budget!=null?' — budget £'+a.budget:'')),
-      'END:VEVENT');
-  });
-  lines.push('END:VCALENDAR');
-  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar'});
-  const l=document.createElement('a');l.href=URL.createObjectURL(blob);l.download='CF-from-dashboard.ics';l.click();URL.revokeObjectURL(l.href);
-  document.getElementById('ics-status').textContent='Downloaded — open the file and add the events to your CF calendar.';
-});
-document.getElementById('ics-import-btn').addEventListener('click',()=>document.getElementById('ics-file').click());
-document.getElementById('ics-file').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    const txt=r.result.replace(/\r?\n[ \t]/g,'');
-    const blocks=txt.split('BEGIN:VEVENT').slice(1);
-    let added=0,skipped=0;
-    blocks.forEach(b=>{
-      const u=((b.match(/^UID:(.*)$/m)||[])[1]||'').trim();
-      const sum=icsUnesc(((b.match(/^SUMMARY[^:]*:(.*)$/m)||[])[1]||'').trim());
-      const dm=b.match(/^DTSTART[^:]*:(\d{4})(\d{2})(\d{2})/m);
-      if(!dm||!sum){skipped++;return;}
-      const date=dm[1]+'-'+dm[2]+'-'+dm[3];
-      if(date<'2026-07-14'||date>CAL_END){skipped++;return;}
-      if(u.includes('@findash')){skipped++;return;}
-      if(state.activities.some(a=>a.date===date&&a.name.toLowerCase()===sum.toLowerCase())){skipped++;return;}
-      const em=b.match(/^DTEND[^:]*:(\d{4})(\d{2})(\d{2})/m);
-      let end=null;
-      if(em){const last=shiftDay(em[1]+'-'+em[2]+'-'+em[3],-1);if(last>date)end=(last>CAL_END?CAL_END:last);}
-      state.activities.push({id:u?('ics-'+u.replace(/[^\w-]/g,'')):uid(),date,end,name:sum,type:'event',budget:null});
-      added++;
-    });
-    save();refresh();
-    document.getElementById('ics-status').textContent='Imported '+added+' new event'+(added===1?'':'s')+(skipped?' ('+skipped+' skipped — duplicates, outside Jul–Sep, or originally from this dashboard)':'')+'. New ones show amber; click their day to set a budget.';
-    e.target.value='';
-  };
-  r.readAsText(f);
-});
 
 // ---------- cloud sync ----------
 const SYNC_KEY='finDash-sync';
@@ -986,12 +907,11 @@ document.getElementById('import-no').addEventListener('click',()=>{
 // ---------- init ----------
 function refresh(){
   save();
-  renderNet();renderAccounts();renderCats();renderCal();renderSpendList();
+  renderNet();renderAccounts();renderCats();renderCal();
 }
 initBalances();
 initCats();
 renderTabs();
-document.getElementById('spend-date').value=todayStr();
 refresh();
 
 window.__syncReady=true;
