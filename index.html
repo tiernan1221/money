@@ -270,7 +270,7 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v9 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v10 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
@@ -327,9 +327,28 @@ function sanitiseIds(){
 const parseAmt=v=>parseFloat(String(v==null?'':v).replace(/[£,+\s]/g,''));
 if(!state.settings)state.settings={payday:0};
 if(!state.settings.accNames)state.settings.accNames={revolut:'Account 1',aib:'Account 2'};
+if(!state.settings.paydayAccount)state.settings.paydayAccount='revolut';
 sanitiseIds();
 let PAY_DEFAULT=state.settings.payday||0;
 const isPayday=a=>a.type==='event'&&/^\s*payday\s*$/i.test(a.name||'');
+const payAcc=()=>state.settings.paydayAccount||'revolut';
+function lastWorkingDay(y,m){
+  const d=new Date(y,m+1,0);
+  while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()-1);
+  return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function explicitPayday(ym){
+  return state.activities.find(a=>(isPayday(a)||a.type==='payday')&&String(a.date||'').slice(0,7)===ym);
+}
+function isAutoPayday(ds){
+  if(!(PAY_DEFAULT>0))return false;
+  const ym=ds.slice(0,7);
+  if(explicitPayday(ym))return false;
+  return lastWorkingDay(+ym.slice(0,4),+ym.slice(5,7)-1)===ds;
+}
+function movePayday(ym,keepId){
+  state.activities=state.activities.filter(a=>!((isPayday(a)||a.type==='payday')&&String(a.date||'').slice(0,7)===ym&&a.id!==keepId));
+}
 function repeatHit(a,ds){
   if(!a.repeat||ds<a.date)return false;
   if(a.until&&ds>a.until)return false;
@@ -381,6 +400,7 @@ function dayNetFor(ds,acc){
       }
     }
   });
+  if(isAutoPayday(ds)&&(!acc||acc===payAcc()))net+=PAY_DEFAULT;
   if(!acc||acc==='revolut')net-=state.spends.filter(s=>s.date===ds).reduce((x,s)=>x+s.amount,0);
   return net;
 }
@@ -592,6 +612,14 @@ function renderCal(){
       c.dataset.amt=isPayday(a)?'+'+fmt(Math.round(a.budget||PAY_DEFAULT)):(a.budget!=null&&occStart?fmt(Math.round(a.budget)):'·');
       cell.appendChild(c);
     });
+    if(isAutoPayday(ds)){
+      const c=document.createElement('span');
+      c.className='chip c-payday';
+      c.textContent='+'+fmt(PAY_DEFAULT)+' PAYDAY';
+      c.title='Automatic payday, set to the last working day of the month. Log a spend called PAYDAY on another day to move it.';
+      c.dataset.amt='+'+fmt(Math.round(PAY_DEFAULT));
+      cell.appendChild(c);
+    }
     daySpends.forEach(s=>{
       const c=document.createElement('span');
       c.className='chip '+(s.amount<0?'c-payday':'c-'+spendCat(s));
@@ -633,6 +661,7 @@ function renderDayPanel(ds){
       <span>${a.type==='event'&&!isPayday(a)?`<button class="x" title="Category (click to change)" style="font-size:10px;font-weight:700;" onclick="cycleCat('${aid}')">${esc(catOf(a).toUpperCase().slice(0,3))}</button>`:''}${a.type==='event'?`<button class="x" title="Switch account" style="font-size:10px;font-weight:700;" onclick="toggleAcct('${aid}')">${esc(String(state.settings.accNames[actAccount(a)]).slice(0,3).toUpperCase())}</button><button class="x" title="Set budget" onclick="setBudget('${aid}')">✎</button>`:''}
       <button class="x" title="Remove" onclick="delAct('${aid}')">✕</button></span></div>`;
   });
+  if(isAutoPayday(ds))html+=`<div class="row-item"><span>PAYDAY <span class="muted">· Income +${fmt(PAY_DEFAULT)} · automatic</span></span><span class="muted" style="font-size:11px;">last working day</span></div>`;
   spends.forEach(s=>{
     const sid=idSafe(s.id);
     html+=`<div class="row-item"><span>${esc(s.what)} <span class="muted">· ${s.amount<0?'received':'spent'}</span></span>
@@ -656,7 +685,8 @@ window.quickSpend=ds=>{
   const nag=(el,msg)=>{el.setCustomValidity(msg);el.reportValidity();el.oninput=()=>el.setCustomValidity('');};
   if(!what){nag(whatEl,'Give it a name, e.g. Coffee');return;}
   if(/^payday$/i.test(what)){
-    state.activities.push({id:uid(),date:ds,end:null,name:'PAYDAY',type:'event',budget:(n>0?n:0)});
+    movePayday(ds.slice(0,7),null);
+    state.activities.push({id:uid(),date:ds,end:null,name:'PAYDAY',type:'event',budget:(n>0?n:0),account:payAcc()});
   }else{
     if(!(n>0)){nag(amtEl,'Enter an amount, e.g. 20 or .50');return;}
     state.spends.push({id:uid(),date:ds,what,amount:dir<0?-n:n});
@@ -702,7 +732,12 @@ document.getElementById('act-form').addEventListener('submit',e=>{
   const budget=claude?null:(parseFloat(actAmt.value)||0);
   const account=document.getElementById('act-account').value;
   const category=document.getElementById('act-cat').value||null;
-  state.activities.push({id:uid(),date,end,repeat,until,name,type:'event',budget,account,category});
+  const newId=uid();
+  state.activities.push({id:newId,date,end,repeat,until,name,type:'event',budget,account,category});
+  if(/^\s*payday\s*$/i.test(name)){
+    movePayday(date.slice(0,7),newId);
+    state.settings.paydayAccount=account;
+  }
   save();refresh();
   const box=document.getElementById('prompt-box'),actions=document.getElementById('prompt-actions');
   if(claude){
