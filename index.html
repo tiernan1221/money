@@ -273,7 +273,7 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v11 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v12 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
@@ -856,7 +856,18 @@ async function pushCloud(){
   if(!syncOn()||pulling)return;
   syncSay('Saving…');
   try{
-    if(fileSha===null){const cur=await repoCall('GET');fileSha=cur?cur.sha:undefined;}
+    const cur=await repoCall('GET');
+    if(cur&&cur.content){
+      let remote=null;
+      try{remote=JSON.parse(b64dec(cur.content));}catch(e){}
+      if(remote&&(remote.updatedAt||0)>(state.updatedAt||0)){
+        fileSha=cur.sha;
+        syncSay('Cloud has newer data than this device. Pulling instead of overwriting it.');
+        await pullCloud(false);
+        return;
+      }
+    }
+    fileSha=cur?cur.sha:undefined;
     const body={message:'dashboard update '+new Date().toISOString(),content:b64enc(JSON.stringify(state))};
     if(fileSha)body.sha=fileSha;
     const out=await repoCall('PUT',body);
@@ -962,7 +973,6 @@ document.getElementById('import-no').addEventListener('click',()=>{
 
 // ---------- init ----------
 function refresh(){
-  save();
   renderNet();renderAccounts();renderCats();renderCal();
 }
 initBalances();
