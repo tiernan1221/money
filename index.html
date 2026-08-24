@@ -137,8 +137,9 @@ button.btn2:hover{background:var(--teal-bg);}
   .chip{font-size:0;padding:2px 1px;margin-top:2px;border-radius:4px;text-align:center;line-height:1.25;}
   .chip::before{content:attr(data-amt);font-size:9.5px;font-weight:600;}
   .day-foot{padding-top:3px;flex-direction:column;align-items:stretch;gap:0;}
-  .proj-tag{font-size:10.5px;}
-  .spent-tag,.gain-tag{font-size:9.5px;}
+  .proj-tag,.spent-tag,.gain-tag{white-space:nowrap;letter-spacing:-.2px;}
+  .proj-tag{font-size:10px;}
+  .spent-tag,.gain-tag{font-size:9px;}
   .panel{padding:15px;}
   form.inline{gap:6px;}
   form.inline > input,form.inline > select,form.inline > button{flex:1 1 100%;min-width:0;width:100%;}
@@ -149,6 +150,8 @@ button.btn2:hover{background:var(--teal-bg);}
   .cal{gap:3px;}
   .day{min-height:56px;padding:3px 2px;}
   .chip::before{font-size:8.5px;}
+  .proj-tag{font-size:9px;}
+  .spent-tag,.gain-tag{font-size:8.5px;}
   .cards4,.cards3{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
 }
 </style>
@@ -270,14 +273,17 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v10 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v11 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
 
 <script>
 const KEY='finDash-v1';
-const fmt=n=>'£'+(Math.round(n*100)/100).toLocaleString('en-GB',{minimumFractionDigits:(n%1?2:0),maximumFractionDigits:2});
+const fmt=n=>{
+  const r=Math.round((Number(n)||0)*100)/100,a=Math.abs(r);
+  return (r<0?'-':'')+'£'+a.toLocaleString('en-GB',{minimumFractionDigits:(a%1?2:0),maximumFractionDigits:2});
+};
 const todayStr=()=>new Date().toISOString().slice(0,10);
 
 const PHASES=[
@@ -545,7 +551,7 @@ function renderAccounts(){
       rows+='<div class="drop-row"><span>'+esc(a.name)+' · '+esc(a.repeat)+(nxt?' · next '+nxt.slice(8)+'/'+nxt.slice(5,7):'')+'</span><b style="color:'+(isPayday(a)?'var(--teal)':'var(--red)')+'">'+(isPayday(a)?'+':'−')+fmt(amt)+'</b></div>';
     });
     drop.innerHTML=rows
-      ?rows+'<div class="drop-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span>Keep in here monthly</span><b>'+fmt(Math.round(total))+'</b></div>'
+      ?rows+'<div class="drop-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span>Keep in here monthly</span><b>'+fmt(total)+'</b></div>'
       :'<p class="muted">No rolling payments assigned here yet. Pick the account when adding an activity, or switch one via its day panel.</p>';
   });
   const sel=document.getElementById('act-account');
@@ -609,7 +615,7 @@ function renderCal(){
       c.className='chip '+(isPayday(a)||a.type==='payday'?'c-payday':a.type==='bill'?'c-bill':(a.budget==null?'c-pending':'c-'+catOf(a)));
       c.textContent=(isPayday(a)?'+'+fmt(a.budget||PAY_DEFAULT)+' ':(a.type==='event'&&a.budget!=null&&occStart?fmt(a.budget)+' ':''))+a.name+(a.repeat?' ↻':'')+(a.end&&ds>a.date?' (cont.)':'');
       c.title=a.name+(a.repeat?' (repeats '+a.repeat+(a.until?' until '+a.until.slice(8)+'/'+a.until.slice(5,7)+'/'+a.until.slice(0,4):'')+')':a.end?' ('+a.date.slice(8)+'/'+a.date.slice(5,7)+' to '+a.end.slice(8)+'/'+a.end.slice(5,7)+')':'');
-      c.dataset.amt=isPayday(a)?'+'+fmt(Math.round(a.budget||PAY_DEFAULT)):(a.budget!=null&&occStart?fmt(Math.round(a.budget)):'·');
+      c.dataset.amt=isPayday(a)?'+'+fmt(a.budget||PAY_DEFAULT):(a.budget!=null&&occStart?fmt(a.budget):'·');
       cell.appendChild(c);
     });
     if(isAutoPayday(ds)){
@@ -617,7 +623,7 @@ function renderCal(){
       c.className='chip c-payday';
       c.textContent='+'+fmt(PAY_DEFAULT)+' PAYDAY';
       c.title='Automatic payday, set to the last working day of the month. Log a spend called PAYDAY on another day to move it.';
-      c.dataset.amt='+'+fmt(Math.round(PAY_DEFAULT));
+      c.dataset.amt='+'+fmt(PAY_DEFAULT);
       cell.appendChild(c);
     }
     daySpends.forEach(s=>{
@@ -625,14 +631,15 @@ function renderCal(){
       c.className='chip '+(s.amount<0?'c-payday':'c-'+spendCat(s));
       c.textContent=(s.amount<0?'+'+fmt(-s.amount):fmt(s.amount))+' '+s.what;
       c.title=s.what+(s.amount<0?' (received)':' (logged spend · '+spendCat(s)+')');
-      c.dataset.amt=(s.amount<0?'+'+fmt(Math.round(-s.amount)):fmt(Math.round(s.amount)));
+      c.dataset.amt=(s.amount<0?'+'+fmt(-s.amount):fmt(s.amount));
       cell.appendChild(c);
     });
-    const net=Math.round(dayNet(ds));
-    if(net!==0||PROJ[ds]!=null){
+    const net=dayNet(ds);
+    const moved=Math.abs(net)>=0.005;
+    if(moved||PROJ[ds]!=null){
       const foot=document.createElement('div');foot.className='day-foot';
-      if(PROJ[ds]!=null){const pr=document.createElement('span');pr.className='proj-tag';pr.textContent='≈'+fmt(Math.round(PROJ[ds]));pr.title='Projected cash at the end of this day: current cash plus paydays, minus every planned activity and logged spend up to here';foot.appendChild(pr);}
-      if(net!==0){
+      if(PROJ[ds]!=null){const pr=document.createElement('span');pr.className='proj-tag';pr.textContent='≈'+fmt(PROJ[ds]);pr.title='Projected cash at the end of this day: current cash plus paydays, minus every planned activity and logged spend up to here';foot.appendChild(pr);}
+      if(moved){
         const t=document.createElement('span');
         t.className=net<0?'spent-tag':'gain-tag';
         t.textContent=(net<0?'−':'+')+fmt(Math.abs(net));
