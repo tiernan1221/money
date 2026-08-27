@@ -178,7 +178,7 @@ button.btn2:hover{background:var(--teal-bg);}
     <div class="card metric cat" id="cat-future"><label>Future ▾</label><div class="val" id="pct-future">-</div><p class="muted">Aim 10-20%</p><div class="acct-drop" id="drop-future" style="display:none;"></div></div>
     <div class="card metric cat" id="cat-fun"><label>Fun ▾</label><div class="val" id="pct-fun">-</div><p class="muted">Aim 20-30%</p><div class="acct-drop" id="drop-fun" style="display:none;"></div></div>
   </div>
-  <p class="muted" style="margin-top:8px;">Tap any figure to update it. It saves automatically.</p>
+  <p class="muted" style="margin-top:8px;">Balances include everything logged today. Tap any figure to update it, entering what your bank shows right now. It saves automatically.</p>
 </section>
 
 <section>
@@ -273,7 +273,7 @@ button.btn2:hover{background:var(--teal-bg);}
 </section>
 
 <p class="muted" style="text-align:center;font-size:11px;margin-top:4px;">
-  build v14 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
+  build v15 · <button class="btn2" id="update-btn" style="padding:3px 10px;font-size:11px;margin-left:4px;">Update app</button>
 </p>
 
 </div>
@@ -435,9 +435,13 @@ function dayNetFor(ds,acc){
 function dayNet(ds){return dayNetFor(ds,null);}
 function accountCash(acc){
   const an=state.accounts[acc].anchor;
+  const t=todayStr();
   let bal=an.cash;
-  for(let dt=new Date(an.date+'T12:00');dt<new Date(todayStr()+'T12:00');dt.setDate(dt.getDate()+1)){
-    bal+=dayNetFor(dt.toISOString().slice(0,10),acc);
+  for(let dt=new Date(an.date+'T12:00');;){
+    dt.setDate(dt.getDate()+1);
+    const ds=dt.toISOString().slice(0,10);
+    if(ds>t)break;
+    bal+=dayNetFor(ds,acc);
   }
   return Math.round(bal*100)/100;
 }
@@ -604,19 +608,24 @@ function renderAccounts(){
 let PROJ={};
 function buildProjection(){
   PROJ={};
-  const startOfToday=currentCash();
-  let bal=startOfToday;
-  for(let dt=new Date(todayStr()+'T12:00');dt<=new Date(CAL_END+'T12:00');dt.setDate(dt.getDate()+1)){
+  const t=todayStr();
+  const endToday=currentCash();
+  PROJ[t]=endToday;
+  let bal=endToday;
+  for(let dt=new Date(t+'T12:00');;){
+    dt.setDate(dt.getDate()+1);
     const ds=dt.toISOString().slice(0,10);
+    if(ds>CAL_END)break;
     bal+=dayNet(ds);
     PROJ[ds]=bal;
   }
-  let back=startOfToday;
-  for(let dt=new Date(todayStr()+'T12:00');dt>new Date(CAL_START+'T12:00');){
+  let back=endToday;
+  for(let dt=new Date(t+'T12:00');;){
+    back-=dayNet(dt.toISOString().slice(0,10));
     dt.setDate(dt.getDate()-1);
-    const ds=dt.toISOString().slice(0,10);
-    PROJ[ds]=back;
-    back-=dayNet(ds);
+    const prev=dt.toISOString().slice(0,10);
+    if(prev<CAL_START)break;
+    PROJ[prev]=back;
   }
 }
 
